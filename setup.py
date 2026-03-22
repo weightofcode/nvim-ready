@@ -1,10 +1,12 @@
 import os
 import platform
 import shutil
+import stat
 import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
+
 
 # general >>>>>>>>
 COMPATIBLE_UNIX = { "Linux", "Darwin", "FreeBSD" }
@@ -21,7 +23,15 @@ def run_command(cmd):
     except subprocess.CalledProcessError as e:
         print(f"NVIM_RUN_ERROR: Command failed: {cmd}")
         sys.exit(e.returncode)
+
+def update_chmod_unix_script(script_path: Path):
+    if platform.system() in COMPATIBLE_UNIX:
+        if script_path.exists():
+            curent_permissions = script_path.stat().st_mode
+            script_path.chmod(curent_permissions | stat.S_IXUSR)
+            print(f"NVIM_SETUP_INFO: Made {script_path} executable.")
 # <<<<<<<< general
+
 
 # Nvim client >>>>>>>>
 def check_nvim_installed():
@@ -34,6 +44,7 @@ def check_nvim_installed():
     except FileNotFoundError:
         return False
 # <<<<<<<< Nvim client
+
 
 # Nvim config >>>>>>>>
 def get_nvim_config_path():
@@ -96,7 +107,6 @@ def deploy_nvim_config(repo_root, target_path):
 
 
 
-
 def main():
     if not check_nvim_installed():
         print("NVIM_INSTALL_WARNING: Neovim is not installed or not in PATH.")
@@ -112,14 +122,15 @@ def main():
     print(f"NVIM_OS_INFO: Detected OS: {os_name}")
 
     if os_name in COMPATIBLE_WIN:
-        script = repo_root/"setup"/"setup.ps1"
+        setup_ps1 = repo_root/"setup"/"setup.ps1"
         run_command( [
             "powershell",
             "-ExecutionPolicy", "Bypass",
-            "-File", str(script)] )
+            "-File", str(setup_ps1)] )
     elif os_name in COMPATIBLE_UNIX:
-        script = repo_root/"setup"/"setup.sh"
-        run_command( ["bash", str(script)] )
+        setup_sh = repo_root/"setup"/"setup.sh"
+        update_chmod_unix_script(setup_sh)
+        run_command( ["bash", str(setup_sh)] )
     else:
         print(f"NVIM_OS_ERROR: Unsupported OS: {os_name}. Proceed at your own risk.")
         sys.exit(1)
