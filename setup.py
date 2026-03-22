@@ -7,6 +7,12 @@ from datetime import datetime
 from pathlib import Path
 
 
+COMPATIBLE_UNIX = { "Linux", "Darwin", "FreeBSD" }
+COMPATIBLE_WIN  = { "Windows" }
+
+def is_compatible_os(os_name):
+    return os_name in COMPATIBLE_UNIX or os_name in COMPATIBLE_WIN
+
 def run_command(cmd):
     try:
         subprocess.run(cmd, check=True)
@@ -16,13 +22,13 @@ def run_command(cmd):
 
 def get_nvim_config_path():
     os_name = platform.system()
-    if os_name == "Windows":
+    if os_name in COMPATIBLE_WIN:
         localappdata = os.environ.get("LOCALAPPDATA")
         if not localappdata:
             print(f"NVIM_CONFIG_ERROR: LOCALAPPDATA not set.")
             sys.exit(1)
         return Path(localappdata)/"nvim"
-    elif os_name in ("Linux", "Darwin"):
+    elif os_name in COMPATIBLE_UNIX:
         return Path.home()/".config"/"nvim"
     else:
         print(f"NVIM_CONFIG_ERROR: Unsupported OS: {os_name}")
@@ -33,7 +39,9 @@ def backup_existing_config(target_path):
         print(f"NVIM_CONFIG_WARNING: Neovim config path does not exist: {target_path}")
         return
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_path = target_path.parent/f"nvim_backup_{timestamp}"
+    backup_path = target_path.parent/"nvim_backup"/f"nvim_backup_{timestamp}"
+    print(f"NVIM_CONFIG_INFO: Backing up existing config to: {target_path}")
+    shutil.move(str(target_path), str(backup_path))
 
 def deploy_nvim_config(repo_root, target_path):
     print("NVIM_CONFIG_INFO: Deploying Neovim config...")
@@ -60,25 +68,27 @@ def deploy_nvim_config(repo_root, target_path):
 def main():
     repo_root = Path(__file__).resolve().parent
     os_name = platform.system()
+    if not is_compatible_os(os_name):
+        print(f"NVIM_CONFIG_WARNING: Unsupported OS: {os_name}. Proceed at your own risk.")
+        print(f"NVIM_CONFIG_WARNING: Supported OSes are: Windows, Linux, macOS, FreeBSD")
     print(f"NVIM_CONFIG_INFO: Detected OS: {os_name}")
 
     target_path = get_nvim_config_path()
     print(f"NVIM_CONFIG_INFO: Target path: {target_path}")
-
     backup_existing_config(target_path)
     deploy_nvim_config(repo_root, target_path)
 
-    if os_name == "Windows":
+    if os_name in COMPATIBLE_WIN:
         script = repo_root/"setup"/"setup.ps1"
         run_command( [
             "powershell",
             "-ExecutionPolicy", "Bypass",
             "-File", str(script)] )
-    elif os_name in ("Linux", "Darwin"):
+    elif os_name in COMPATIBLE_UNIX:
         script = repo_root/"setup"/"setup.sh"
         run_command( ["bash", str(script)] )
     else: 
-        print(f"NVIM_CONFIG_ERROR: Unsupported OS: {os_name}")
+        print(f"NVIM_CONFIG_ERROR: Unsupported OS: {os_name}. Proceed at your own risk.")
         sys.exit(1)
 
 if __name__ == "__main__":
