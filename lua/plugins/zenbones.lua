@@ -9,7 +9,7 @@ return {
     -- you can set set configuration options here
     config = function()
         -- vim.g.zenbones_darken_comments = 45
-        -- vim.g.zenbones_transparent_background = true
+        vim.g.zenbones_transparent_background = true
         vim.cmd.colorscheme('zenbones')
     end
 }
