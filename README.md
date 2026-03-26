@@ -41,3 +41,14 @@ More info will follow. Stay tuned.
     - JetBrainsMono Nerd Font Mono was used for devicons 
         because Google Sans Code does not have a Nerd Font variant
     
+### Install Neovim principles
+* Make sure:
+    - Nvim is installed
+    - Git is installed
+* Handle:
+    - Linux (multiple package managers)
+    - macOS (brew)
+    - BSD (pkg)
+    - Windows (winget)
+* Install only if missing    
+* Assume package manager
