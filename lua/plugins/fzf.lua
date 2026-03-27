@@ -22,6 +22,11 @@ return {
             function() require("fzf-lua").live_grep() end,
             desc="Find Files with Grep in project directory"
         },
+        {
+            "<leader>fc",
+            function() require("fzf-lua").files({cwd=vim.fn.stdpath("config")}) end,
+            desc="Find Files in config folder of the project directory"
+        },
     }
     ---@diagnostic enable: missing-fields
 }
