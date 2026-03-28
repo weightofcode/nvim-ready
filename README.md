@@ -52,3 +52,7 @@ More info will follow. Stay tuned.
     - Windows (winget)
 * Install only if missing    
 * Assume package manager
+
+### What happened under the hood
+* fzf - installed with winget (or choco)
+* ripgrep - installed with choco
