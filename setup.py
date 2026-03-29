@@ -106,7 +106,6 @@ def deploy_nvim_config(repo_root, target_path):
 # <<<<<<<< Nvim config
 
 
-
 def main():
     if not check_nvim_installed():
         print("NVIM_INSTALL_WARNING: Neovim is not installed or not in PATH.")
