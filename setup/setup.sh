@@ -4,15 +4,15 @@ echo "NVIM_CONFIG_INFO: Running Unix setup..."
 
 # package manager >>>>>>>>
 if command -v apt >/dev/null 2>&1; then
-    PKG_MANAGER = "apt"
+    PKG_MANAGER="apt"
 elif command -v pacman >/dev/null 2>&1; then
-    PKG_MANAGER = "pacman"
+    PKG_MANAGER="pacman"
 elif command -v dnf >/dev/null 2>&1; then
-    PKG_MANAGER = "dnf"
+    PKG_MANAGER="dnf"
 elif command -v brew >/dev/null 2>&1; then
-    PKG_MANAGER = "brew"
+    PKG_MANAGER="brew"
 elif command -v pkg >/dev/null 2>&1; then
-    PKG_MANAGER = "pkg"
+    PKG_MANAGER="pkg"
 else
     echo "NVIM_SETUP_ERROR: No supported package manager found."
     exit 1
@@ -22,11 +22,11 @@ echo "NVIM_SETUP_ERROR: Detected package manager: $PKG_MANAGER"
 
 # install Neovim >>>>>>>>
 install_package() {
-    pkg_name = $1
-    case $PKG_MANAGER in 
+    pkg_name="$1"
+    case $PKG_MANAGER in
         apt)
             sudo apt update
-            sudp apt install -y "$pkg_name"
+            sudo apt install -y "$pkg_name"
             ;;
         pacman)
             sudo pacman -Sy --noconfirm "$pkg_name"
